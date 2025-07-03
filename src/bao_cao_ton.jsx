@@ -12,7 +12,941 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { Lock, X, Eye, EyeOff } from "lucide-react";
 
+// Component chính
+const App = () => {
+  const [currentPage, setCurrentPage] = useState("inventory");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loginData, setLoginData] = useState({ username: "", password: "" });
+  const [loginError, setLoginError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleAdminClick = () => {
+    if (isAuthenticated) {
+      setCurrentPage("admin");
+    } else {
+      setShowLoginModal(true);
+    }
+  };
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (
+      loginData.username === "phongnh5" &&
+      loginData.password === "phongnh5"
+    ) {
+      setIsAuthenticated(true);
+      setCurrentPage("admin");
+      setShowLoginModal(false);
+      setLoginError("");
+      setLoginData({ username: "", password: "" });
+    } else {
+      setLoginError("Tên đăng nhập hoặc mật khẩu không đúng!");
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setCurrentPage("inventory");
+  };
+
+  const closeModal = () => {
+    setShowLoginModal(false);
+    setLoginError("");
+    setLoginData({ username: "", password: "" });
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      {/* Navigation */}
+      <nav className="bg-white shadow-md sticky top-0 z-20">
+        <div className="container mx-auto flex flex-wrap items-center justify-between py-4 px-6">
+          <img
+            src="https://fpt.vn/fontend_v2.0_2024/assets/images/fpt-logo.svg"
+            alt="FPT Logo"
+            className="h-8"
+          />
+          <h1 className="text-2xl font-extrabold text-blue-700">
+            Phân Tích Tồn Ca Vụ HCM
+          </h1>
+          <div className="flex space-x-3 items-center">
+            <button
+              onClick={() => setCurrentPage("inventory")}
+              className={`
+                px-4 py-2 text-sm font-medium rounded-lg
+                transition-colors duration-200
+                ${
+                  currentPage === "inventory"
+                    ? "bg-blue-600 text-white shadow-lg"
+                    : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                }
+              `}
+            >
+              Trang Tồn
+            </button>
+            <button
+              onClick={handleAdminClick}
+              className={`
+                flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg
+                transition-colors duration-200
+                ${
+                  currentPage === "admin"
+                    ? "bg-blue-600 text-white shadow-lg"
+                    : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                }
+              `}
+            >
+              <Lock className="w-4 h-4" />
+              Trang Admin
+            </button>
+            {isAuthenticated && (
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-sm font-medium rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition-colors duration-200"
+              >
+                Đăng Xuất
+              </button>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      {/* Login Modal */}
+      {showLoginModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <Lock className="w-6 h-6 text-blue-600" />
+                Đăng Nhập Admin
+              </h2>
+              <button
+                onClick={closeModal}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tên đăng nhập
+                </label>
+                <input
+                  type="text"
+                  value={loginData.username}
+                  onChange={(e) =>
+                    setLoginData({ ...loginData, username: e.target.value })
+                  }
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Nhập tên đăng nhập"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Mật khẩu
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={loginData.password}
+                    onChange={(e) =>
+                      setLoginData({ ...loginData, password: e.target.value })
+                    }
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 pr-12"
+                    placeholder="Nhập mật khẩu"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {loginError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                  {loginError}
+                </div>
+              )}
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
+                >
+                  Đăng Nhập
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Content */}
+      <main className="container mx-auto py-8 px-6">
+        {currentPage === "inventory" ? (
+          <InventoryDashboard />
+        ) : (
+          <AdminDashboard />
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t mt-12">
+        <div className="container mx-auto py-4 text-center text-gray-500 text-sm">
+          © {new Date().getFullYear()} PhongNH5 All rights reserved.
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+// Component trang Admin
+const AdminDashboard = () => {
+  const [activeTab, setActiveTab] = useState("personnel");
+  const [personnelData, setPersonnelData] = useState([]);
+  const [statusData, setStatusData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Form states for personnel
+  const [newPersonnel, setNewPersonnel] = useState({
+    nhanSu: "",
+    block: "",
+    doiTac: "",
+  });
+
+  // Form states for status
+  const [newStatus, setNewStatus] = useState({
+    tinhTrang: "",
+    loaiCls: "",
+  });
+
+  // JSONBin API configuration
+  const apiKey = "$2a$10$dxJzzGFLNbMgbXsbVbvj8e/RW7gf2roGVn0xCgG9yv1QzqacqPZS2";
+  const personnelBinId = "686662c68960c979a5b65a7a";
+  const statusBinId = "6866633b8a456b7966ba96aa";
+
+  const API_PERSONNEL = `https://api.jsonbin.io/v3/b/${personnelBinId}`;
+  const API_STATUS = `https://api.jsonbin.io/v3/b/${statusBinId}`;
+
+  // Load data on component mount
+  useEffect(() => {
+    loadPersonnelData();
+    loadStatusData();
+  }, []);
+
+  // Load personnel data
+  const loadPersonnelData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(API_PERSONNEL, {
+        headers: {
+          "X-Master-Key": apiKey,
+        },
+      });
+      const result = await response.json();
+      setPersonnelData(result.record || []);
+    } catch (error) {
+      console.error("Error loading personnel data:", error);
+      setError("Lỗi tải dữ liệu nhân sự");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load status data
+  const loadStatusData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(API_STATUS, {
+        headers: {
+          "X-Master-Key": apiKey,
+        },
+      });
+      const result = await response.json();
+      setStatusData(result.record || []);
+    } catch (error) {
+      console.error("Error loading status data:", error);
+      setError("Lỗi tải dữ liệu tình trạng");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add new personnel
+  const addPersonnel = async () => {
+    if (!newPersonnel.nhanSu || !newPersonnel.block || !newPersonnel.doiTac) {
+      setError("Vui lòng điền đầy đủ thông tin nhân sự");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Create new personnel with ID
+      const newPersonnelWithId = {
+        ...newPersonnel,
+        id: Date.now().toString(), // Simple ID generation
+      };
+
+      // Add to existing data
+      const updatedData = [...personnelData, newPersonnelWithId];
+
+      const response = await fetch(API_PERSONNEL, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Master-Key": apiKey,
+        },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (response.ok) {
+        await loadPersonnelData();
+        setNewPersonnel({ nhanSu: "", block: "", doiTac: "" });
+        setError(null);
+      } else {
+        setError("Lỗi thêm nhân sự");
+      }
+    } catch (error) {
+      console.error("Error adding personnel:", error);
+      setError("Lỗi thêm nhân sự");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add new status
+  const addStatus = async () => {
+    if (!newStatus.tinhTrang || !newStatus.loaiCls) {
+      setError("Vui lòng điền đầy đủ thông tin tình trạng");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Create new status with ID
+      const newStatusWithId = {
+        ...newStatus,
+        id: Date.now().toString(), // Simple ID generation
+      };
+
+      // Add to existing data
+      const updatedData = [...statusData, newStatusWithId];
+
+      const response = await fetch(API_STATUS, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Master-Key": apiKey,
+        },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (response.ok) {
+        await loadStatusData();
+        setNewStatus({ tinhTrang: "", loaiCls: "" });
+        setError(null);
+      } else {
+        setError("Lỗi thêm tình trạng");
+      }
+    } catch (error) {
+      console.error("Error adding status:", error);
+      setError("Lỗi thêm tình trạng");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Import personnel from Excel
+  const handlePersonnelImport = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setLoading(true);
+      const arrayBuffer = await file.arrayBuffer();
+      const workbook = XLSX.read(arrayBuffer, { type: "array" });
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+      if (jsonData.length <= 1) {
+        setError("File Excel không có dữ liệu");
+        return;
+      }
+
+      // Skip header row and process data
+      const dataRows = jsonData.slice(1);
+      const newPersonnelList = [];
+
+      for (const row of dataRows) {
+        if (row.length >= 3 && row[0] && row[1] && row[2]) {
+          newPersonnelList.push({
+            id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+            nhanSu: row[0].toString(),
+            block: row[1].toString(),
+            doiTac: row[2].toString(),
+          });
+        }
+      }
+
+      if (newPersonnelList.length > 0) {
+        // Combine with existing data
+        const updatedData = [...personnelData, ...newPersonnelList];
+
+        const response = await fetch(API_PERSONNEL, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": apiKey,
+          },
+          body: JSON.stringify(updatedData),
+        });
+
+        if (response.ok) {
+          await loadPersonnelData();
+          setError(null);
+          alert(`Đã import thành công ${newPersonnelList.length} nhân sự`);
+        } else {
+          setError("Lỗi import dữ liệu");
+        }
+      }
+    } catch (error) {
+      console.error("Error importing personnel:", error);
+      setError("Lỗi import file Excel");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Import status from Excel
+  const handleStatusImport = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setLoading(true);
+      const arrayBuffer = await file.arrayBuffer();
+      const workbook = XLSX.read(arrayBuffer, { type: "array" });
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+      if (jsonData.length <= 1) {
+        setError("File Excel không có dữ liệu");
+        return;
+      }
+
+      // Skip header row and process data
+      const dataRows = jsonData.slice(1);
+      const newStatusList = [];
+
+      for (const row of dataRows) {
+        if (row.length >= 2 && row[0] && row[1]) {
+          newStatusList.push({
+            id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+            tinhTrang: row[0].toString(),
+            loaiCls: row[1].toString(),
+          });
+        }
+      }
+
+      if (newStatusList.length > 0) {
+        // Combine with existing data
+        const updatedData = [...statusData, ...newStatusList];
+
+        const response = await fetch(API_STATUS, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": apiKey,
+          },
+          body: JSON.stringify(updatedData),
+        });
+
+        if (response.ok) {
+          await loadStatusData();
+          setError(null);
+          alert(`Đã import thành công ${newStatusList.length} tình trạng`);
+        } else {
+          setError("Lỗi import dữ liệu");
+        }
+      }
+    } catch (error) {
+      console.error("Error importing status:", error);
+      setError("Lỗi import file Excel");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Export personnel to Excel
+  const exportPersonnelToExcel = () => {
+    if (personnelData.length === 0) {
+      setError("Không có dữ liệu để xuất");
+      return;
+    }
+
+    const exportData = personnelData.map((item) => ({
+      "Nhân Sự": item.nhanSu,
+      Block: item.block,
+      "Đối Tác": item.doiTac,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Nhân Sự");
+
+    const fileName = `Danh_Sach_Nhan_Su_${new Date()
+      .toISOString()
+      .slice(0, 10)}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+  };
+
+  // Export status to Excel
+  const exportStatusToExcel = () => {
+    if (statusData.length === 0) {
+      setError("Không có dữ liệu để xuất");
+      return;
+    }
+
+    const exportData = statusData.map((item) => ({
+      "Tình Trạng": item.tinhTrang,
+      "Loại Cls": item.loaiCls,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Tình Trạng");
+
+    const fileName = `Danh_Sach_Tinh_Trang_${new Date()
+      .toISOString()
+      .slice(0, 10)}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+  };
+
+  // Delete personnel
+  const deletePersonnel = async (id) => {
+    if (!confirm("Bạn có chắc chắn muốn xóa nhân sự này?")) return;
+
+    try {
+      setLoading(true);
+
+      // Filter out the item to delete
+      const updatedData = personnelData.filter((item) => item.id !== id);
+
+      const response = await fetch(API_PERSONNEL, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Master-Key": apiKey,
+        },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (response.ok) {
+        await loadPersonnelData();
+        setError(null);
+      } else {
+        setError("Lỗi xóa nhân sự");
+      }
+    } catch (error) {
+      console.error("Error deleting personnel:", error);
+      setError("Lỗi xóa nhân sự");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Delete status
+  const deleteStatus = async (id) => {
+    if (!confirm("Bạn có chắc chắn muốn xóa tình trạng này?")) return;
+
+    try {
+      setLoading(true);
+
+      // Filter out the item to delete
+      const updatedData = statusData.filter((item) => item.id !== id);
+
+      const response = await fetch(API_STATUS, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Master-Key": apiKey,
+        },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (response.ok) {
+        await loadStatusData();
+        setError(null);
+      } else {
+        setError("Lỗi xóa tình trạng");
+      }
+    } catch (error) {
+      console.error("Error deleting status:", error);
+      setError("Lỗi xóa tình trạng");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-6">Trang Quản Trị</h1>
+
+      {/* Error display */}
+      {error && (
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
+          <p>{error}</p>
+          <button
+            className="mt-2 text-sm text-red-800 underline"
+            onClick={() => setError(null)}
+          >
+            Đóng
+          </button>
+        </div>
+      )}
+
+      {/* Tab navigation */}
+      <div className="mb-6">
+        <div className="border-b border-gray-200">
+          <nav className="-mb-px flex space-x-8">
+            <button
+              onClick={() => setActiveTab("personnel")}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "personnel"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              Quản Lý Nhân Sự
+            </button>
+            <button
+              onClick={() => setActiveTab("status")}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "status"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              Quản Lý Tình Trạng
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      {/* Personnel Management Tab */}
+      {activeTab === "personnel" && (
+        <div className="space-y-6">
+          {/* Add Personnel Form */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-lg font-semibold mb-4">Thêm Nhân Sự Mới</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Nhân Sự
+                </label>
+                <input
+                  type="text"
+                  className="w-full p-2 border rounded"
+                  value={newPersonnel.nhanSu}
+                  onChange={(e) =>
+                    setNewPersonnel({ ...newPersonnel, nhanSu: e.target.value })
+                  }
+                  placeholder="Tên nhân sự"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Block</label>
+                <input
+                  type="text"
+                  className="w-full p-2 border rounded"
+                  value={newPersonnel.block}
+                  onChange={(e) =>
+                    setNewPersonnel({ ...newPersonnel, block: e.target.value })
+                  }
+                  placeholder="Tên block"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Đối Tác
+                </label>
+                <input
+                  type="text"
+                  className="w-full p-2 border rounded"
+                  value={newPersonnel.doiTac}
+                  onChange={(e) =>
+                    setNewPersonnel({ ...newPersonnel, doiTac: e.target.value })
+                  }
+                  placeholder="Tên đối tác"
+                />
+              </div>
+            </div>
+            <button
+              onClick={addPersonnel}
+              disabled={loading}
+              className={`px-4 py-2 rounded text-white ${
+                loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
+              }`}
+            >
+              {loading ? "Đang thêm..." : "Thêm Nhân Sự"}
+            </button>
+          </div>
+
+          {/* Import/Export Personnel */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-lg font-semibold mb-4">
+              Import/Export Nhân Sự
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Import từ Excel (3 cột: Nhân Sự, Block, Đối Tác)
+                </label>
+                <input
+                  type="file"
+                  accept=".xlsx, .xls"
+                  onChange={handlePersonnelImport}
+                  className="w-full p-2 border rounded"
+                  disabled={loading}
+                />
+              </div>
+              <div className="flex items-end">
+                <button
+                  onClick={exportPersonnelToExcel}
+                  disabled={loading || personnelData.length === 0}
+                  className={`px-4 py-2 rounded text-white ${
+                    loading || personnelData.length === 0
+                      ? "bg-gray-400"
+                      : "bg-green-500 hover:bg-green-600"
+                  }`}
+                >
+                  Xuất Excel
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Personnel List */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-lg font-semibold mb-4">
+              Danh Sách Nhân Sự ({personnelData.length} nhân sự)
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      ID
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Nhân Sự
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Block
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Đối Tác
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Hành Động
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {personnelData.map((item) => (
+                    <tr key={item.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.nhanSu}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.block}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.doiTac}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button
+                          onClick={() => deletePersonnel(item.id)}
+                          className="text-red-600 hover:text-red-900"
+                          disabled={loading}
+                        >
+                          Xóa
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Status Management Tab */}
+      {activeTab === "status" && (
+        <div className="space-y-6">
+          {/* Add Status Form */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-lg font-semibold mb-4">Thêm Tình Trạng Mới</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Tình Trạng
+                </label>
+                <input
+                  type="text"
+                  className="w-full p-2 border rounded"
+                  value={newStatus.tinhTrang}
+                  onChange={(e) =>
+                    setNewStatus({ ...newStatus, tinhTrang: e.target.value })
+                  }
+                  placeholder="Tình trạng lỗi"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Loại Cls
+                </label>
+                <input
+                  type="text"
+                  className="w-full p-2 border rounded"
+                  value={newStatus.loaiCls}
+                  onChange={(e) =>
+                    setNewStatus({ ...newStatus, loaiCls: e.target.value })
+                  }
+                  placeholder="Loại bảo trì"
+                />
+              </div>
+            </div>
+            <button
+              onClick={addStatus}
+              disabled={loading}
+              className={`px-4 py-2 rounded text-white ${
+                loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
+              }`}
+            >
+              {loading ? "Đang thêm..." : "Thêm Tình Trạng"}
+            </button>
+          </div>
+
+          {/* Import/Export Status */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-lg font-semibold mb-4">
+              Import/Export Tình Trạng
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Import từ Excel (2 cột: Tình Trạng, Loại Cls)
+                </label>
+                <input
+                  type="file"
+                  accept=".xlsx, .xls"
+                  onChange={handleStatusImport}
+                  className="w-full p-2 border rounded"
+                  disabled={loading}
+                />
+              </div>
+              <div className="flex items-end">
+                <button
+                  onClick={exportStatusToExcel}
+                  disabled={loading || statusData.length === 0}
+                  className={`px-4 py-2 rounded text-white ${
+                    loading || statusData.length === 0
+                      ? "bg-gray-400"
+                      : "bg-green-500 hover:bg-green-600"
+                  }`}
+                >
+                  Xuất Excel
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Status List */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-lg font-semibold mb-4">
+              Danh Sách Tình Trạng ({statusData.length} tình trạng)
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      ID
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Tình Trạng
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Loại Cls
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      Hành Động
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {statusData.map((item) => (
+                    <tr key={item.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.tinhTrang}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {item.loaiCls}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button
+                          onClick={() => deleteStatus(item.id)}
+                          className="text-red-600 hover:text-red-900"
+                          disabled={loading}
+                        >
+                          Xóa
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Component trang Inventory (đã cập nhật để tích hợp với API)
 const InventoryDashboard = () => {
   // Quản lý state
   const [data, setData] = useState([]);
@@ -30,6 +964,8 @@ const InventoryDashboard = () => {
     newDeployment: 0,
     relocation: 0,
     swap: 0,
+    maintenancePhysical: 0,
+    maintenanceLogical: 0,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -42,6 +978,66 @@ const InventoryDashboard = () => {
     partners: {},
     blocks: {},
   });
+
+  // State cho việc quản lý nhiều file
+  const [uploadedFiles, setUploadedFiles] = useState({
+    tonTrienKhai: null,
+    tonBaoTri: null,
+    lichTruc: null,
+  });
+
+  // State cho dữ liệu bảo trì và lịch trực
+  const [maintenanceData, setMaintenanceData] = useState([]);
+  const [dutyScheduleData, setDutyScheduleData] = useState([]);
+
+  // State cho dữ liệu từ API
+  const [personnelMappingData, setPersonnelMappingData] = useState([]);
+  const [statusMappingData, setStatusMappingData] = useState([]);
+
+  // Flag để kiểm tra xem đã upload đủ file chưa
+  const [allFilesUploaded, setAllFilesUploaded] = useState(false);
+
+  // JSONBin API configuration
+  const apiKey = "$2a$10$dxJzzGFLNbMgbXsbVbvj8e/RW7gf2roGVn0xCgG9yv1QzqacqPZS2";
+  const personnelBinId = "686662c68960c979a5b65a7a";
+  const statusBinId = "6866633b8a456b7966ba96aa";
+
+  const API_PERSONNEL = `https://api.jsonbin.io/v3/b/${personnelBinId}`;
+  const API_STATUS = `https://api.jsonbin.io/v3/b/${statusBinId}`;
+
+  // Load dữ liệu mapping từ API
+  useEffect(() => {
+    loadPersonnelMapping();
+    loadStatusMapping();
+  }, []);
+
+  const loadPersonnelMapping = async () => {
+    try {
+      const response = await fetch(API_PERSONNEL, {
+        headers: {
+          "X-Master-Key": apiKey,
+        },
+      });
+      const result = await response.json();
+      setPersonnelMappingData(result.record || []);
+    } catch (error) {
+      console.error("Error loading personnel mapping:", error);
+    }
+  };
+
+  const loadStatusMapping = async () => {
+    try {
+      const response = await fetch(API_STATUS, {
+        headers: {
+          "X-Master-Key": apiKey,
+        },
+      });
+      const result = await response.json();
+      setStatusMappingData(result.record || []);
+    } catch (error) {
+      console.error("Error loading status mapping:", error);
+    }
+  };
 
   // Xác định hàm sắp xếp
   const sortData = (data, key, direction) => {
@@ -70,21 +1066,84 @@ const InventoryDashboard = () => {
     });
   };
 
+  // Kiểm tra xem đã upload đủ file cần thiết chưa
+  useEffect(() => {
+    if (
+      uploadedFiles.tonTrienKhai &&
+      (uploadedFiles.tonBaoTri || maintenanceData.length > 0) &&
+      (uploadedFiles.lichTruc || dutyScheduleData.length > 0)
+    ) {
+      setAllFilesUploaded(true);
+    } else {
+      setAllFilesUploaded(false);
+    }
+  }, [uploadedFiles, maintenanceData.length, dutyScheduleData.length]);
+
   // Lọc dữ liệu khi bộ lọc thay đổi
   useEffect(() => {
     if (data.length > 0) {
       applyFilters();
     }
-  }, [data, selectedPartner, selectedRegion, startDate, endDate, sortConfig]);
+  }, [
+    data,
+    selectedPartner,
+    selectedRegion,
+    startDate,
+    endDate,
+    sortConfig,
+    maintenanceData,
+    dutyScheduleData,
+  ]);
 
-  // Phân tích và xử lý dữ liệu từ file Excel
-  const processExcelFile = async (file) => {
+  // Hàm để tìm thông tin nhân sự từ API
+  const findPersonnelInfo = (personnelName) => {
+    if (!personnelName || personnelMappingData.length === 0) return null;
+
+    const personnel = personnelMappingData.find(
+      (p) =>
+        p.nhanSu &&
+        p.nhanSu.toString().toLowerCase() ===
+          personnelName.toString().toLowerCase()
+    );
+
+    return personnel;
+  };
+
+  // Hàm để xác định loại bảo trì từ tình trạng
+  const getMaintenanceType = (tinhTrang) => {
+    if (!tinhTrang || statusMappingData.length === 0)
+      return "maintenanceLogical";
+
+    const status = statusMappingData.find(
+      (s) =>
+        s.tinhTrang &&
+        s.tinhTrang.toString().toLowerCase() ===
+          tinhTrang.toString().toLowerCase()
+    );
+
+    if (status && status.loaiCls) {
+      return status.loaiCls.toString().toLowerCase().includes("vật lý")
+        ? "maintenancePhysical"
+        : "maintenanceLogical";
+    }
+
+    return "maintenanceLogical";
+  };
+
+  // Xử lý import file Excel
+  const handleFileImport = async (e) => {
+    const file = e.target.files[0];
     if (!file) return;
 
     setLoading(true);
     setError(null);
 
     try {
+      // Xác định loại file dựa trên tên file và nội dung
+      const fileName = file.name.toLowerCase();
+      console.log("Importing file:", fileName);
+
+      // Đọc một phần đầu file để xác định loại
       const arrayBuffer = await file.arrayBuffer();
       const workbook = XLSX.read(arrayBuffer, {
         type: "array",
@@ -92,6 +1151,93 @@ const InventoryDashboard = () => {
         cellStyles: true,
         cellFormulas: true,
       });
+
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const sampleData = XLSX.utils.sheet_to_json(worksheet, {
+        header: 1,
+        range: 0,
+      });
+
+      // Thử xác định loại file dựa trên header
+      if (sampleData && sampleData.length > 0) {
+        const headers = sampleData[0];
+        console.log("File headers:", headers);
+
+        // Kiểm tra xem có phải file triển khai không
+        if (
+          headers.some((h) => h && h.toString().includes("TG Hẹn xanh")) ||
+          headers.some((h) => h && h.toString().includes("Loại triển khai"))
+        ) {
+          console.log("Detected as deployment file");
+          await processExcelFile(file, "tonTrienKhai", workbook);
+        }
+        // Kiểm tra xem có phải file bảo trì không
+        else if (
+          headers.some(
+            (h) => h && h.toString().includes("Ngày Hẹn - Lần Hẹn(Xanh)")
+          ) ||
+          headers.some((h) => h && h.toString().includes("Tình trạng")) ||
+          fileName.includes("bao_tri") ||
+          fileName.includes("bảo trì")
+        ) {
+          console.log("Detected as maintenance file");
+          await processMaintenanceFile(file, workbook);
+        }
+        // Kiểm tra xem có phải file lịch trực không
+        else if (
+          headers.some((h) => h && h === "CA1") ||
+          headers.some((h) => h && h === "O") ||
+          fileName.includes("lich_truc") ||
+          fileName.includes("lịch trực")
+        ) {
+          console.log("Detected as duty schedule file");
+          await processDutyScheduleFile(file, workbook);
+        }
+        // Nếu không xác định được, dựa vào tên file
+        else if (
+          fileName.includes("trien_khai") ||
+          fileName.includes("triển khai")
+        ) {
+          console.log("Detected as deployment file based on filename");
+          await processExcelFile(file, "tonTrienKhai", workbook);
+        } else {
+          console.log("Could not detect file type, using filename as fallback");
+          if (fileName.includes("bao_tri") || fileName.includes("bảo trì")) {
+            await processMaintenanceFile(file, workbook);
+          } else if (
+            fileName.includes("lich_truc") ||
+            fileName.includes("lịch trực")
+          ) {
+            await processDutyScheduleFile(file, workbook);
+          } else {
+            // Mặc định xử lý như file triển khai
+            await processExcelFile(file, "tonTrienKhai", workbook);
+          }
+        }
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Lỗi xử lý file Excel:", error);
+      setError(`Lỗi xử lý file Excel: ${error.message}`);
+      setLoading(false);
+    }
+  };
+
+  // Phân tích và xử lý file triển khai
+  const processExcelFile = async (file, fileType, existingWorkbook = null) => {
+    try {
+      let workbook = existingWorkbook;
+      if (!workbook) {
+        const arrayBuffer = await file.arrayBuffer();
+        workbook = XLSX.read(arrayBuffer, {
+          type: "array",
+          cellDates: true,
+          cellStyles: true,
+          cellFormulas: true,
+        });
+      }
 
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
@@ -103,35 +1249,18 @@ const InventoryDashboard = () => {
 
       // Lấy header
       const headers = jsonData[0];
+      console.log("Processing deployment file with headers:", headers);
 
       // Tìm vị trí các cột quan trọng
-      const doiTacIdx = headers.findIndex(
-        (h) => h && h.toString().includes("Đối tác")
-      );
-      const blockIdx = headers.findIndex(
-        (h) => h && h.toString().includes("Block")
-      );
-      const blockNhanSuIdx = headers.findIndex(
-        (h) => h && h.toString().includes("Block nhân sự")
-      );
-      const nhanSuIdx = headers.findIndex(
-        (h) => h && h.toString().includes("Nhân sự")
-      );
-      const tgHenXanhIdx = headers.findIndex(
-        (h) => h && h.toString().includes("TG Hẹn xanh")
-      );
-      const tgHenDoIdx = headers.findIndex(
-        (h) => h && h.toString().includes("TG Hẹn đỏ")
-      );
-      const loaiTrienKhaiIdx = headers.findIndex(
-        (h) => h && h.toString().includes("Loại triển khai")
-      );
-      const vungIdx = headers.findIndex(
-        (h) => h && h.toString().includes("Vùng")
-      );
-      const tinhThanhIdx = headers.findIndex(
-        (h) => h && h.toString().includes("Tỉnh thành")
-      );
+      const doiTacIdx = findColumnIndex(headers, "Đối tác");
+      const blockIdx = findColumnIndex(headers, "Block");
+      const blockNhanSuIdx = findColumnIndex(headers, "Block nhân sự");
+      const nhanSuIdx = findColumnIndex(headers, "Nhân sự");
+      const tgHenXanhIdx = findColumnIndex(headers, "TG Hẹn xanh");
+      const tgHenDoIdx = findColumnIndex(headers, "TG Hẹn đỏ");
+      const loaiTrienKhaiIdx = findColumnIndex(headers, "Loại triển khai");
+      const vungIdx = findColumnIndex(headers, "Vùng");
+      const tinhThanhIdx = findColumnIndex(headers, "Tỉnh thành");
 
       // Kiểm tra các cột bắt buộc
       if (doiTacIdx === -1 || (tgHenXanhIdx === -1 && tgHenDoIdx === -1)) {
@@ -176,6 +1305,28 @@ const InventoryDashboard = () => {
           }
         }
 
+        // Lấy thông tin nhân sự và tìm kiếm trong API
+        const personnelName =
+          nhanSuIdx !== -1 ? (row[nhanSuIdx] || "").toString() : "";
+        const personnelInfo = findPersonnelInfo(personnelName);
+
+        // Sử dụng thông tin từ API nếu có, nếu không thì dùng dữ liệu từ file
+        let partnerFromAPI = "";
+        let blockFromAPI = "";
+
+        if (personnelInfo) {
+          partnerFromAPI = personnelInfo.doiTac || "";
+          blockFromAPI = personnelInfo.block || "";
+        }
+
+        // Ưu tiên thông tin từ API, sau đó từ file
+        const finalPartner =
+          partnerFromAPI ||
+          (doiTacIdx !== -1 ? (row[doiTacIdx] || "").toString() : "");
+        const finalBlock =
+          blockFromAPI ||
+          (blockIdx !== -1 ? (row[blockIdx] || "").toString() : "");
+
         // Lấy thông tin khu vực
         const region = vungIdx !== -1 ? (row[vungIdx] || "").toString() : "";
         const province =
@@ -183,11 +1334,11 @@ const InventoryDashboard = () => {
 
         // Tạo item dữ liệu
         normalizedData.push({
-          partner: doiTacIdx !== -1 ? (row[doiTacIdx] || "").toString() : "",
-          block: blockIdx !== -1 ? (row[blockIdx] || "").toString() : "",
+          partner: finalPartner,
+          block: finalBlock,
           blockNhanSu:
             blockNhanSuIdx !== -1 ? (row[blockNhanSuIdx] || "").toString() : "",
-          personnel: nhanSuIdx !== -1 ? (row[nhanSuIdx] || "").toString() : "",
+          personnel: personnelName,
           date: dateValue,
           region: region,
           province: province,
@@ -201,6 +1352,12 @@ const InventoryDashboard = () => {
 
       // Cập nhật state
       setData(aggregatedData);
+
+      // Cập nhật uploadedFiles state
+      setUploadedFiles((prev) => ({
+        ...prev,
+        [fileType]: file,
+      }));
 
       // Trích xuất danh sách đối tác, khu vực và ngày duy nhất
       const uniquePartners = [
@@ -245,103 +1402,417 @@ const InventoryDashboard = () => {
       });
 
       setExcelLoaded(true);
-      setLoading(false);
+
+      return true;
     } catch (error) {
-      console.error("Lỗi xử lý file Excel:", error);
-      setError(`Lỗi xử lý file Excel: ${error.message}`);
-      setLoading(false);
+      console.error("Lỗi xử lý file triển khai:", error);
+      setError(`Lỗi xử lý file triển khai: ${error.message}`);
+      return false;
     }
   };
 
-  // Tạo cấu trúc dữ liệu phân cấp
-  const createHierarchicalData = (data) => {
-    // Nhóm dữ liệu theo đối tác -> block -> nhân sự
-    const hierarchy = {};
-
-    data.forEach((item) => {
-      if (!hierarchy[item.partner]) {
-        hierarchy[item.partner] = {
-          name: item.partner,
-          children: {},
-          total: 0,
-          newDeployment: 0,
-          relocation: 0,
-          swap: 0,
-        };
+  // Phân tích và xử lý file bảo trì (đã cập nhật để sử dụng API)
+  const processMaintenanceFile = async (file, existingWorkbook = null) => {
+    try {
+      let workbook = existingWorkbook;
+      if (!workbook) {
+        const arrayBuffer = await file.arrayBuffer();
+        workbook = XLSX.read(arrayBuffer, {
+          type: "array",
+          cellDates: true,
+          cellStyles: true,
+          cellFormulas: true,
+        });
       }
 
-      // Cập nhật tổng cho đối tác
-      hierarchy[item.partner].total += item.total;
-      hierarchy[item.partner].newDeployment += item.newDeployment;
-      hierarchy[item.partner].relocation += item.relocation;
-      hierarchy[item.partner].swap += item.swap;
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-      const blockKey = item.block || "Unknown Block";
-      if (!hierarchy[item.partner].children[blockKey]) {
-        hierarchy[item.partner].children[blockKey] = {
-          name: blockKey,
-          children: {},
-          total: 0,
-          newDeployment: 0,
-          relocation: 0,
-          swap: 0,
-        };
+      if (jsonData.length <= 1) {
+        throw new Error("File bảo trì không có dữ liệu");
       }
 
-      // Cập nhật tổng cho block
-      hierarchy[item.partner].children[blockKey].total += item.total;
-      hierarchy[item.partner].children[blockKey].newDeployment +=
-        item.newDeployment;
-      hierarchy[item.partner].children[blockKey].relocation += item.relocation;
-      hierarchy[item.partner].children[blockKey].swap += item.swap;
+      // Lấy header
+      const headers = jsonData[0];
+      console.log("Processing maintenance file with headers:", headers);
 
-      const personnelKey = item.personnel || "Unknown Personnel";
-      if (!hierarchy[item.partner].children[blockKey].children[personnelKey]) {
-        hierarchy[item.partner].children[blockKey].children[personnelKey] = {
-          name: personnelKey,
-          total: 0,
-          newDeployment: 0,
-          relocation: 0,
-          swap: 0,
-          items: [],
-        };
+      // Tìm vị trí các cột quan trọng
+      const doiTacIdx = findColumnIndex(headers, "Đối tác");
+      const blockIdx = findColumnIndex(headers, "Block");
+      const blockNhanSuIdx = findColumnIndex(headers, "Block nhân sự");
+      const nhanSuIdx = findColumnIndex(headers, "Nhân sự");
+      const tinhTrangIdx = findColumnIndex(headers, "Tình trạng");
+      const ngayHenXanhIdx = findColumnIndex(
+        headers,
+        "Ngày Hẹn - Lần Hẹn(Xanh)"
+      );
+      const ngayHenDoIdx = findColumnIndex(headers, "Ngày Hẹn - Lần Hẹn(Đỏ)");
+      const vungIdx = findColumnIndex(headers, "Vùng");
+      const tinhThanhIdx = findColumnIndex(headers, "Tỉnh thành");
+
+      // Thử tìm các cột quan trọng với tên có thể thay đổi một chút
+      if (doiTacIdx === -1) {
+        for (let i = 0; i < headers.length; i++) {
+          if (
+            headers[i] &&
+            headers[i].toString().toLowerCase().includes("đối tác")
+          ) {
+            console.log("Found alternative 'Đối tác' column at index", i);
+            doiTacIdx = i;
+            break;
+          }
+        }
       }
 
-      // Cập nhật tổng cho nhân sự
-      hierarchy[item.partner].children[blockKey].children[personnelKey].total +=
-        item.total;
-      hierarchy[item.partner].children[blockKey].children[
-        personnelKey
-      ].newDeployment += item.newDeployment;
-      hierarchy[item.partner].children[blockKey].children[
-        personnelKey
-      ].relocation += item.relocation;
-      hierarchy[item.partner].children[blockKey].children[personnelKey].swap +=
-        item.swap;
+      if (tinhTrangIdx === -1) {
+        for (let i = 0; i < headers.length; i++) {
+          if (
+            headers[i] &&
+            headers[i].toString().toLowerCase().includes("tình trạng")
+          ) {
+            console.log("Found alternative 'Tình trạng' column at index", i);
+            tinhTrangIdx = i;
+            break;
+          }
+        }
+      }
 
-      // Thêm item vào danh sách chi tiết
-      hierarchy[item.partner].children[blockKey].children[
-        personnelKey
-      ].items.push(item);
-    });
+      if (ngayHenXanhIdx === -1 && ngayHenDoIdx === -1) {
+        for (let i = 0; i < headers.length; i++) {
+          if (
+            headers[i] &&
+            headers[i].toString().toLowerCase().includes("ngày hẹn")
+          ) {
+            if (headers[i].toString().toLowerCase().includes("xanh")) {
+              console.log(
+                "Found alternative 'Ngày Hẹn Xanh' column at index",
+                i
+              );
+              ngayHenXanhIdx = i;
+            } else if (headers[i].toString().toLowerCase().includes("đỏ")) {
+              console.log("Found alternative 'Ngày Hẹn Đỏ' column at index", i);
+              ngayHenDoIdx = i;
+            }
+          }
+        }
+      }
 
-    // Chuyển đổi cấu trúc đối tượng thành mảng để dễ dàng sử dụng
-    const hierarchicalArray = Object.values(hierarchy).map((partner) => {
-      partner.children = Object.values(partner.children).map((block) => {
-        block.children = Object.values(block.children);
-        return block;
+      // Kiểm tra các cột bắt buộc
+      if (tinhTrangIdx === -1) {
+        throw new Error("File bảo trì không có cột Tình trạng");
+      }
+
+      if (ngayHenXanhIdx === -1 && ngayHenDoIdx === -1) {
+        // Tìm bất kỳ cột ngày nào có thể sử dụng
+        let dateColumnIdx = -1;
+        for (let i = 0; i < headers.length; i++) {
+          if (
+            headers[i] &&
+            headers[i].toString().toLowerCase().includes("ngày")
+          ) {
+            console.log(
+              "Found fallback date column:",
+              headers[i],
+              "at index",
+              i
+            );
+            dateColumnIdx = i;
+            break;
+          }
+        }
+
+        if (dateColumnIdx === -1) {
+          throw new Error("File bảo trì không có cột ngày nào");
+        }
+
+        // Sử dụng cột ngày này làm thay thế
+        ngayHenXanhIdx = dateColumnIdx;
+      }
+
+      // Chuẩn hóa dữ liệu
+      const normalizedData = [];
+
+      for (let i = 1; i < jsonData.length; i++) {
+        const row = jsonData[i];
+        if (!row || row.length === 0) continue;
+
+        // Lấy ngày từ Ngày Hẹn - Lần Hẹn(Xanh) hoặc Ngày Hẹn - Lần Hẹn(Đỏ)
+        let dateValue = "";
+        if (
+          ngayHenXanhIdx !== -1 &&
+          row[ngayHenXanhIdx] &&
+          row[ngayHenXanhIdx].toString().trim() !== ""
+        ) {
+          dateValue = formatDate(row[ngayHenXanhIdx]);
+        } else if (
+          ngayHenDoIdx !== -1 &&
+          row[ngayHenDoIdx] &&
+          row[ngayHenDoIdx].toString().trim() !== ""
+        ) {
+          dateValue = formatDate(row[ngayHenDoIdx]);
+        }
+
+        if (!dateValue) {
+          // Nếu không có ngày, sử dụng ngày hiện tại
+          dateValue = formatDate(new Date());
+        }
+
+        // Lấy thông tin tình trạng để xác định loại bảo trì
+        let tinhTrang = "";
+        if (tinhTrangIdx !== -1 && row[tinhTrangIdx]) {
+          tinhTrang = row[tinhTrangIdx].toString().trim();
+        }
+
+        // Xác định loại bảo trì dựa trên API
+        const maintenanceType = getMaintenanceType(tinhTrang);
+
+        // Lấy thông tin nhân sự và tìm kiếm trong API
+        const personnelName =
+          nhanSuIdx !== -1 ? (row[nhanSuIdx] || "").toString() : "";
+        const personnelInfo = findPersonnelInfo(personnelName);
+
+        // Sử dụng thông tin từ API nếu có, nếu không thì dùng dữ liệu từ file
+        let partnerFromAPI = "";
+        let blockFromAPI = "";
+
+        if (personnelInfo) {
+          partnerFromAPI = personnelInfo.doiTac || "";
+          blockFromAPI = personnelInfo.block || "";
+        }
+
+        // Ưu tiên thông tin từ API, sau đó từ file
+        const finalPartner =
+          partnerFromAPI ||
+          (doiTacIdx !== -1 ? (row[doiTacIdx] || "").toString() : "");
+        const finalBlock =
+          blockFromAPI ||
+          (blockIdx !== -1 ? (row[blockIdx] || "").toString() : "");
+
+        // Lấy thông tin khu vực
+        const region = vungIdx !== -1 ? (row[vungIdx] || "").toString() : "";
+        const province =
+          tinhThanhIdx !== -1 ? (row[tinhThanhIdx] || "").toString() : "";
+
+        // Tạo item dữ liệu
+        normalizedData.push({
+          partner: finalPartner,
+          block: finalBlock,
+          blockNhanSu:
+            blockNhanSuIdx !== -1 ? (row[blockNhanSuIdx] || "").toString() : "",
+          personnel: personnelName,
+          date: dateValue,
+          region: region,
+          province: province,
+          maintenanceType: maintenanceType,
+          tinhTrang: tinhTrang,
+          rawData: row, // Lưu dữ liệu gốc để xuất file
+        });
+      }
+
+      // Tổng hợp dữ liệu bảo trì
+      const aggregatedMaintenanceData =
+        aggregateMaintenanceData(normalizedData);
+
+      // Cập nhật state
+      setMaintenanceData(aggregatedMaintenanceData);
+
+      // Cập nhật uploadedFiles state
+      setUploadedFiles((prev) => ({
+        ...prev,
+        tonBaoTri: file,
+      }));
+
+      // Nếu đã có đủ dữ liệu thì tạo lại cấu trúc phân cấp
+      if (data.length > 0) {
+        createHierarchicalData([...data, ...aggregatedMaintenanceData]);
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Lỗi xử lý file bảo trì:", error);
+      setError(`Lỗi xử lý file bảo trì: ${error.message}`);
+      return false;
+    }
+  };
+
+  // Phân tích và xử lý file lịch trực
+  const processDutyScheduleFile = async (file, existingWorkbook = null) => {
+    try {
+      let workbook = existingWorkbook;
+      if (!workbook) {
+        const arrayBuffer = await file.arrayBuffer();
+        workbook = XLSX.read(arrayBuffer, {
+          type: "array",
+          cellDates: true,
+          cellStyles: true,
+          cellFormulas: true,
+        });
+      }
+
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+      if (jsonData.length <= 1) {
+        throw new Error("File lịch trực không có dữ liệu");
+      }
+
+      // Lấy header
+      const headers = jsonData[0];
+      console.log("Processing duty schedule file with headers:", headers);
+
+      // Tìm vị trí các cột quan trọng
+      const doiTacIdx = findColumnIndex(headers, "Đối tác");
+      const blockIdx = findColumnIndex(headers, "Block");
+
+      // Kiểm tra các cột bắt buộc
+      if (doiTacIdx === -1) {
+        // Tìm bất kỳ cột nào có thể là đối tác
+        for (let i = 0; i < headers.length; i++) {
+          if (
+            headers[i] &&
+            headers[i].toString().toLowerCase().includes("đối tác")
+          ) {
+            console.log("Found alternative 'Đối tác' column at index", i);
+            doiTacIdx = i;
+            break;
+          }
+        }
+
+        if (doiTacIdx === -1) {
+          throw new Error("File lịch trực không có cột Đối tác");
+        }
+      }
+
+      if (blockIdx === -1) {
+        // Tìm bất kỳ cột nào có thể là block
+        for (let i = 0; i < headers.length; i++) {
+          if (
+            headers[i] &&
+            headers[i].toString().toLowerCase().includes("block")
+          ) {
+            console.log("Found alternative 'Block' column at index", i);
+            blockIdx = i;
+            break;
+          }
+        }
+
+        if (blockIdx === -1) {
+          throw new Error("File lịch trực không có cột Block");
+        }
+      }
+
+      // Tìm các cột cho CA1 (có thể có nhiều cột cho các ngày khác nhau)
+      const ca1Columns = [];
+      headers.forEach((header, index) => {
+        if (header && typeof header === "string") {
+          ca1Columns.push(index);
+        }
       });
-      return partner;
-    });
 
-    // Sắp xếp các đối tác theo số
-    hierarchicalArray.sort((a, b) => {
-      const numA = parseInt(a.name.match(/\d+/) || [0]);
-      const numB = parseInt(b.name.match(/\d+/) || [0]);
-      return numA - numB;
-    });
+      if (ca1Columns.length === 0) {
+        throw new Error("File lịch trực không có cột cho các ngày");
+      }
 
-    setHierarchicalData(hierarchicalArray);
+      // Chuẩn hóa dữ liệu
+      const dutyData = [];
+
+      for (let i = 1; i < jsonData.length; i++) {
+        const row = jsonData[i];
+        if (!row || row.length === 0) continue;
+
+        const partner =
+          doiTacIdx !== -1 ? (row[doiTacIdx] || "").toString() : "";
+        const block = blockIdx !== -1 ? (row[blockIdx] || "").toString() : "";
+
+        if (!partner || !block) continue;
+
+        // Đếm số lượng CA1 (ON) và O (OFF)
+        let onCount = 0;
+        let offCount = 0;
+
+        ca1Columns.forEach((colIdx) => {
+          if (row[colIdx]) {
+            const value = row[colIdx].toString().trim().toUpperCase();
+            if (value === "CA1") {
+              onCount++;
+            } else if (value === "O") {
+              offCount++;
+            }
+          }
+        });
+
+        // Thêm vào danh sách
+        dutyData.push({
+          partner,
+          block,
+          onCount,
+          offCount,
+        });
+      }
+
+      // Tổng hợp dữ liệu lịch trực theo đối tác và block
+      const aggregatedDutyData = dutyData.reduce((acc, item) => {
+        const key = `${item.partner}_${item.block}`;
+
+        if (!acc[key]) {
+          acc[key] = {
+            partner: item.partner,
+            block: item.block,
+            onCount: 0,
+            offCount: 0,
+          };
+        }
+
+        acc[key].onCount += item.onCount;
+        acc[key].offCount += item.offCount;
+
+        return acc;
+      }, {});
+
+      // Chuyển từ object sang array
+      const dutyScheduleData = Object.values(aggregatedDutyData);
+
+      // Cập nhật state
+      setDutyScheduleData(dutyScheduleData);
+
+      // Cập nhật uploadedFiles state
+      setUploadedFiles((prev) => ({
+        ...prev,
+        lichTruc: file,
+      }));
+
+      return true;
+    } catch (error) {
+      console.error("Lỗi xử lý file lịch trực:", error);
+      setError(`Lỗi xử lý file lịch trực: ${error.message}`);
+      return false;
+    }
+  };
+
+  // Hàm hỗ trợ tìm vị trí cột (linh hoạt hơn)
+  const findColumnIndex = (headers, columnName) => {
+    if (!headers || !columnName) return -1;
+
+    // Tìm chính xác
+    const exactIndex = headers.findIndex(
+      (h) => h && h.toString() === columnName
+    );
+
+    if (exactIndex !== -1) return exactIndex;
+
+    // Tìm gần đúng
+    const partialIndex = headers.findIndex(
+      (h) => h && h.toString().includes(columnName)
+    );
+
+    if (partialIndex !== -1) return partialIndex;
+
+    // Tìm không phân biệt hoa thường
+    return headers.findIndex(
+      (h) => h && h.toString().toLowerCase().includes(columnName.toLowerCase())
+    );
   };
 
   // Hàm định dạng ngày
@@ -352,12 +1823,39 @@ const InventoryDashboard = () => {
 
     if (typeof dateValue === "string") {
       // Xử lý chuỗi ngày với định dạng "DD-MM-YYYY HH:MM:SS"
-      const dateParts = dateValue.split(" ")[0].split("-");
-      if (dateParts.length === 3) {
-        const day = dateParts[0].padStart(2, "0");
-        const month = dateParts[1].padStart(2, "0");
-        const year = dateParts[2];
-        dateStr = `${year}-${month}-${day}`;
+      const parts = dateValue.split(/[\s\/\-:]/);
+
+      // Kiểm tra xem có phải định dạng DD-MM-YYYY
+      if (parts.length >= 3) {
+        let day, month, year;
+
+        // Thử xác định vị trí của ngày, tháng, năm
+        if (parts[0].length === 4) {
+          // Định dạng YYYY-MM-DD
+          year = parts[0];
+          month = parts[1];
+          day = parts[2];
+        } else {
+          // Định dạng DD-MM-YYYY hoặc MM-DD-YYYY
+          // Giả định DD-MM-YYYY cho người dùng Việt Nam
+          day = parts[0];
+          month = parts[1];
+          year = parts[2];
+
+          // Nếu năm chỉ có 2 chữ số, thêm 20 vào trước
+          if (year && year.length === 2) {
+            year = "20" + year;
+          }
+        }
+
+        // Chuẩn hóa ngày tháng
+        if (day && month && year) {
+          day = day.padStart(2, "0");
+          month = month.padStart(2, "0");
+          dateStr = `${year}-${month}-${day}`;
+        } else {
+          dateStr = dateValue;
+        }
       } else {
         dateStr = dateValue;
       }
@@ -384,7 +1882,7 @@ const InventoryDashboard = () => {
     return dateStr;
   };
 
-  // Tổng hợp dữ liệu
+  // Tổng hợp dữ liệu triển khai
   const aggregateData = (normalizedData) => {
     const aggregatedMap = {};
 
@@ -405,6 +1903,8 @@ const InventoryDashboard = () => {
           newDeployment: 0,
           relocation: 0,
           swap: 0,
+          maintenancePhysical: 0,
+          maintenanceLogical: 0,
           rawData: [],
         };
       }
@@ -427,9 +1927,99 @@ const InventoryDashboard = () => {
     return Object.values(aggregatedMap);
   };
 
+  // Tổng hợp dữ liệu bảo trì
+  const aggregateMaintenanceData = (normalizedData) => {
+    const aggregatedMap = {};
+
+    normalizedData.forEach((item) => {
+      // Tạo khóa duy nhất cho mỗi nhóm
+      const key = `${item.date}_${item.partner}_${item.block}_${item.personnel}`;
+
+      if (!aggregatedMap[key]) {
+        aggregatedMap[key] = {
+          date: item.date,
+          partner: item.partner,
+          block: item.block,
+          blockNhanSu: item.blockNhanSu,
+          personnel: item.personnel,
+          region: item.region,
+          province: item.province,
+          total: 0,
+          newDeployment: 0,
+          relocation: 0,
+          swap: 0,
+          maintenancePhysical: 0,
+          maintenanceLogical: 0,
+          rawData: [],
+        };
+      }
+
+      // Tăng tổng số lượng và số lượng theo loại bảo trì
+      aggregatedMap[key].total += 1;
+
+      if (item.maintenanceType === "maintenancePhysical") {
+        aggregatedMap[key].maintenancePhysical += 1;
+      } else if (item.maintenanceType === "maintenanceLogical") {
+        aggregatedMap[key].maintenanceLogical += 1;
+      }
+
+      // Lưu dữ liệu gốc
+      aggregatedMap[key].rawData.push(item.rawData);
+    });
+
+    return Object.values(aggregatedMap);
+  };
+
+  // Kết hợp dữ liệu triển khai và bảo trì
+  const combineData = () => {
+    if (data.length === 0) return data;
+
+    // Tạo bản sao của dữ liệu triển khai
+    const combinedData = [...data];
+
+    // Duyệt qua dữ liệu bảo trì và kết hợp với dữ liệu triển khai
+    if (maintenanceData.length > 0) {
+      maintenanceData.forEach((maintenanceItem) => {
+        // Tìm item tương ứng trong dữ liệu triển khai
+        const existingItemIndex = combinedData.findIndex(
+          (item) =>
+            item.date === maintenanceItem.date &&
+            item.partner === maintenanceItem.partner &&
+            item.block === maintenanceItem.block &&
+            item.personnel === maintenanceItem.personnel
+        );
+
+        if (existingItemIndex !== -1) {
+          // Nếu tìm thấy, cập nhật thông tin bảo trì
+          combinedData[existingItemIndex].maintenancePhysical +=
+            maintenanceItem.maintenancePhysical;
+          combinedData[existingItemIndex].maintenanceLogical +=
+            maintenanceItem.maintenanceLogical;
+          combinedData[existingItemIndex].total +=
+            maintenanceItem.maintenancePhysical +
+            maintenanceItem.maintenanceLogical;
+
+          // Kết hợp dữ liệu gốc
+          combinedData[existingItemIndex].rawData = [
+            ...combinedData[existingItemIndex].rawData,
+            ...maintenanceItem.rawData,
+          ];
+        } else {
+          // Nếu không tìm thấy, thêm mới vào danh sách
+          combinedData.push(maintenanceItem);
+        }
+      });
+    }
+
+    return combinedData;
+  };
+
   // Áp dụng bộ lọc cho dữ liệu
   const applyFilters = () => {
-    let filtered = [...data];
+    // Kết hợp dữ liệu triển khai và bảo trì
+    const combinedData = combineData();
+
+    let filtered = [...combinedData];
 
     if (selectedPartner) {
       filtered = filtered.filter((item) => item.partner === selectedPartner);
@@ -457,8 +2047,140 @@ const InventoryDashboard = () => {
     if (selectedPartner || selectedRegion || startDate || endDate) {
       createHierarchicalData(filtered);
     } else {
-      createHierarchicalData(data);
+      createHierarchicalData(combinedData);
     }
+  };
+
+  // Tạo cấu trúc dữ liệu phân cấp
+  const createHierarchicalData = (data) => {
+    // Nhóm dữ liệu theo đối tác -> block -> nhân sự
+    const hierarchy = {};
+
+    data.forEach((item) => {
+      if (!hierarchy[item.partner]) {
+        hierarchy[item.partner] = {
+          name: item.partner,
+          children: {},
+          total: 0,
+          newDeployment: 0,
+          relocation: 0,
+          swap: 0,
+          maintenancePhysical: 0,
+          maintenanceLogical: 0,
+          onCount: 0,
+          offCount: 0,
+        };
+      }
+
+      // Cập nhật tổng cho đối tác
+      hierarchy[item.partner].total += item.total;
+      hierarchy[item.partner].newDeployment += item.newDeployment;
+      hierarchy[item.partner].relocation += item.relocation;
+      hierarchy[item.partner].swap += item.swap;
+      hierarchy[item.partner].maintenancePhysical +=
+        item.maintenancePhysical || 0;
+      hierarchy[item.partner].maintenanceLogical +=
+        item.maintenanceLogical || 0;
+
+      const blockKey = item.block || "Unknown Block";
+      if (!hierarchy[item.partner].children[blockKey]) {
+        hierarchy[item.partner].children[blockKey] = {
+          name: blockKey,
+          children: {},
+          total: 0,
+          newDeployment: 0,
+          relocation: 0,
+          swap: 0,
+          maintenancePhysical: 0,
+          maintenanceLogical: 0,
+          onCount: 0,
+          offCount: 0,
+        };
+      }
+
+      // Cập nhật tổng cho block
+      hierarchy[item.partner].children[blockKey].total += item.total;
+      hierarchy[item.partner].children[blockKey].newDeployment +=
+        item.newDeployment;
+      hierarchy[item.partner].children[blockKey].relocation += item.relocation;
+      hierarchy[item.partner].children[blockKey].swap += item.swap;
+      hierarchy[item.partner].children[blockKey].maintenancePhysical +=
+        item.maintenancePhysical || 0;
+      hierarchy[item.partner].children[blockKey].maintenanceLogical +=
+        item.maintenanceLogical || 0;
+
+      const personnelKey = item.personnel || "Unknown Personnel";
+      if (!hierarchy[item.partner].children[blockKey].children[personnelKey]) {
+        hierarchy[item.partner].children[blockKey].children[personnelKey] = {
+          name: personnelKey,
+          total: 0,
+          newDeployment: 0,
+          relocation: 0,
+          swap: 0,
+          maintenancePhysical: 0,
+          maintenanceLogical: 0,
+          items: [],
+        };
+      }
+
+      // Cập nhật tổng cho nhân sự
+      hierarchy[item.partner].children[blockKey].children[personnelKey].total +=
+        item.total;
+      hierarchy[item.partner].children[blockKey].children[
+        personnelKey
+      ].newDeployment += item.newDeployment;
+      hierarchy[item.partner].children[blockKey].children[
+        personnelKey
+      ].relocation += item.relocation;
+      hierarchy[item.partner].children[blockKey].children[personnelKey].swap +=
+        item.swap;
+      hierarchy[item.partner].children[blockKey].children[
+        personnelKey
+      ].maintenancePhysical += item.maintenancePhysical || 0;
+      hierarchy[item.partner].children[blockKey].children[
+        personnelKey
+      ].maintenanceLogical += item.maintenanceLogical || 0;
+
+      // Thêm item vào danh sách chi tiết
+      hierarchy[item.partner].children[blockKey].children[
+        personnelKey
+      ].items.push(item);
+    });
+
+    // Cập nhật thông tin lịch trực
+    if (dutyScheduleData.length > 0) {
+      dutyScheduleData.forEach((dutyItem) => {
+        if (
+          hierarchy[dutyItem.partner] &&
+          hierarchy[dutyItem.partner].children[dutyItem.block]
+        ) {
+          hierarchy[dutyItem.partner].onCount += dutyItem.onCount;
+          hierarchy[dutyItem.partner].offCount += dutyItem.offCount;
+          hierarchy[dutyItem.partner].children[dutyItem.block].onCount +=
+            dutyItem.onCount;
+          hierarchy[dutyItem.partner].children[dutyItem.block].offCount +=
+            dutyItem.offCount;
+        }
+      });
+    }
+
+    // Chuyển đổi cấu trúc đối tượng thành mảng để dễ dàng sử dụng
+    const hierarchicalArray = Object.values(hierarchy).map((partner) => {
+      partner.children = Object.values(partner.children).map((block) => {
+        block.children = Object.values(block.children);
+        return block;
+      });
+      return partner;
+    });
+
+    // Sắp xếp các đối tác theo số
+    hierarchicalArray.sort((a, b) => {
+      const numA = parseInt(a.name.match(/\d+/) || [0]);
+      const numB = parseInt(b.name.match(/\d+/) || [0]);
+      return numA - numB;
+    });
+
+    setHierarchicalData(hierarchicalArray);
   };
 
   // Tính toán dữ liệu tổng hợp
@@ -469,24 +2191,22 @@ const InventoryDashboard = () => {
         newDeployment: acc.newDeployment + (item.newDeployment || 0),
         relocation: acc.relocation + (item.relocation || 0),
         swap: acc.swap + (item.swap || 0),
+        maintenancePhysical:
+          acc.maintenancePhysical + (item.maintenancePhysical || 0),
+        maintenanceLogical:
+          acc.maintenanceLogical + (item.maintenanceLogical || 0),
       }),
       {
         totalInventory: 0,
         newDeployment: 0,
         relocation: 0,
         swap: 0,
+        maintenancePhysical: 0,
+        maintenanceLogical: 0,
       }
     );
 
     setSummaryData(summary);
-  };
-
-  // Xử lý import file Excel
-  const handleFileImport = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      await processExcelFile(file);
-    }
   };
 
   // Xử lý xuất file Excel
@@ -510,6 +2230,8 @@ const InventoryDashboard = () => {
         "Triển Khai Mới": item.newDeployment,
         "Chuyển Địa Điểm": item.relocation,
         Swap: item.swap,
+        "Bảo Trì Vật Lý": item.maintenancePhysical || 0,
+        "Bảo Trì Logic": item.maintenanceLogical || 0,
       }));
 
       // Tạo worksheet
@@ -570,6 +2292,8 @@ const InventoryDashboard = () => {
             newDeployment: 0,
             relocation: 0,
             swap: 0,
+            maintenancePhysical: 0,
+            maintenanceLogical: 0,
           };
         }
 
@@ -577,6 +2301,8 @@ const InventoryDashboard = () => {
         acc[date].newDeployment += item.newDeployment || 0;
         acc[date].relocation += item.relocation || 0;
         acc[date].swap += item.swap || 0;
+        acc[date].maintenancePhysical += item.maintenancePhysical || 0;
+        acc[date].maintenanceLogical += item.maintenanceLogical || 0;
 
         return acc;
       }, {})
@@ -640,32 +2366,100 @@ const InventoryDashboard = () => {
           role="alert"
         >
           <p>{error}</p>
+          <button
+            className="mt-2 text-sm text-red-800 underline"
+            onClick={() => setError(null)}
+          >
+            Đóng
+          </button>
         </div>
       )}
 
       {/* Phần import file */}
       <div className="mb-6 bg-gray-100 p-4 rounded-lg">
         <h2 className="text-lg font-medium mb-2">Import Dữ Liệu</h2>
-        <div className="flex items-center space-x-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
-            <input
-              type="file"
-              accept=".xlsx, .xls"
-              onChange={handleFileImport}
-              className="hidden"
-              id="fileInput"
-              disabled={loading}
-            />
-            <label
-              htmlFor="fileInput"
-              className={`inline-block px-4 py-2 rounded cursor-pointer ${
-                loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
-              } text-white`}
-            >
-              Chọn File Excel
-            </label>
+            <h3 className="text-sm font-medium mb-1">File Tồn Triển Khai</h3>
+            <div className="flex items-center">
+              <input
+                type="file"
+                accept=".xlsx, .xls"
+                onChange={handleFileImport}
+                className="hidden"
+                id="fileTrienKhai"
+                disabled={loading}
+              />
+              <label
+                htmlFor="fileTrienKhai"
+                className={`inline-block px-4 py-2 rounded cursor-pointer ${
+                  loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
+                } text-white`}
+              >
+                Chọn File
+              </label>
+              {uploadedFiles.tonTrienKhai && (
+                <span className="ml-2 text-green-600">✓ Đã tải lên</span>
+              )}
+            </div>
           </div>
 
+          <div>
+            <h3 className="text-sm font-medium mb-1">File Tồn Bảo Trì</h3>
+            <div className="flex items-center">
+              <input
+                type="file"
+                accept=".xlsx, .xls"
+                onChange={handleFileImport}
+                className="hidden"
+                id="fileBaoTri"
+                disabled={loading}
+              />
+              <label
+                htmlFor="fileBaoTri"
+                className={`inline-block px-4 py-2 rounded cursor-pointer ${
+                  loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
+                } text-white`}
+              >
+                Chọn File
+              </label>
+              {uploadedFiles.tonBaoTri && (
+                <span className="ml-2 text-green-600">✓ Đã tải lên</span>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-medium mb-1">File Lịch Trực</h3>
+            <div className="flex items-center">
+              <input
+                type="file"
+                accept=".xlsx, .xls"
+                onChange={handleFileImport}
+                className="hidden"
+                id="fileLichTruc"
+                disabled={loading}
+              />
+              <label
+                htmlFor="fileLichTruc"
+                className={`inline-block px-4 py-2 rounded cursor-pointer ${
+                  loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
+                } text-white`}
+              >
+                Chọn File
+              </label>
+              {uploadedFiles.lichTruc && (
+                <span className="ml-2 text-green-600">✓ Đã tải lên</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-gray-600">
+            <p>✓ Dữ liệu nhân sự: {personnelMappingData.length} records</p>
+            <p>✓ Dữ liệu tình trạng: {statusMappingData.length} records</p>
+          </div>
           <button
             onClick={handleExport}
             disabled={loading || filteredData.length === 0}
@@ -681,7 +2475,10 @@ const InventoryDashboard = () => {
 
         {!excelLoaded && !loading && (
           <div className="mt-4 text-blue-700">
-            <p>Vui lòng import file Excel để bắt đầu.</p>
+            <p>
+              Vui lòng import các file Excel để bắt đầu. Cần có đủ file Tồn
+              Triển Khai, Tồn Bảo Trì và Lịch Trực.
+            </p>
           </div>
         )}
 
@@ -712,7 +2509,7 @@ const InventoryDashboard = () => {
         )}
       </div>
 
-      {excelLoaded && (
+      {allFilesUploaded && excelLoaded && (
         <>
           {/* Bộ lọc */}
           <div className="mb-6">
@@ -785,7 +2582,7 @@ const InventoryDashboard = () => {
           </div>
 
           {/* Thẻ tổng hợp */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
             <div className="bg-blue-100 p-4 rounded-lg shadow">
               <h2 className="text-lg font-semibold">Tổng Tồn</h2>
               <p className="text-3xl font-bold">
@@ -813,6 +2610,20 @@ const InventoryDashboard = () => {
                 {summaryData.swap.toLocaleString()}
               </p>
             </div>
+
+            <div className="bg-red-100 p-4 rounded-lg shadow">
+              <h2 className="text-lg font-semibold">Bảo Trì Vật Lý</h2>
+              <p className="text-3xl font-bold">
+                {summaryData.maintenancePhysical.toLocaleString()}
+              </p>
+            </div>
+
+            <div className="bg-orange-100 p-4 rounded-lg shadow">
+              <h2 className="text-lg font-semibold">Bảo Trì Logic</h2>
+              <p className="text-3xl font-bold">
+                {summaryData.maintenanceLogical.toLocaleString()}
+              </p>
+            </div>
           </div>
 
           {/* Phần biểu đồ */}
@@ -833,8 +2644,10 @@ const InventoryDashboard = () => {
                           "newDeployment",
                           "relocation",
                           "swap",
+                          "maintenancePhysical",
+                          "maintenanceLogical",
                         ]),
-                      ].sort((a, b) => a.partner.localeCompare(b.partner))} // 👈 Sort theo tên đối tác
+                      ].sort((a, b) => a.partner.localeCompare(b.partner))}
                       margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
@@ -859,6 +2672,16 @@ const InventoryDashboard = () => {
                         name="Chuyển Địa Điểm"
                       />
                       <Bar dataKey="swap" fill="#ff8042" name="Swap" />
+                      <Bar
+                        dataKey="maintenancePhysical"
+                        fill="#d81b60"
+                        name="Bảo Trì Vật Lý"
+                      />
+                      <Bar
+                        dataKey="maintenanceLogical"
+                        fill="#ffb74d"
+                        name="Bảo Trì Logic"
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -908,6 +2731,18 @@ const InventoryDashboard = () => {
                         stroke="#ff8042"
                         name="Swap"
                       />
+                      <Line
+                        type="monotone"
+                        dataKey="maintenancePhysical"
+                        stroke="#d81b60"
+                        name="Bảo Trì Vật Lý"
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="maintenanceLogical"
+                        stroke="#ffb74d"
+                        name="Bảo Trì Logic"
+                      />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -925,20 +2760,32 @@ const InventoryDashboard = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="w-1/5 px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Đối Tác
                     </th>
-                    <th className="w-2/5 px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Tổng Tồn
                     </th>
-                    <th className="w-1/5 px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Triển Khai Mới
                     </th>
-                    <th className="w-1/5 px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Chuyển Địa Điểm
                     </th>
-                    <th className="w-1/5 px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Swap
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Bảo Trì Vật Lý
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Bảo Trì Logic
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      ON (CA1)
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      OFF (O)
                     </th>
                   </tr>
                 </thead>
@@ -970,12 +2817,24 @@ const InventoryDashboard = () => {
                         <td className="px-6 py-2 text-center">
                           {partner.swap}
                         </td>
+                        <td className="px-6 py-2 text-center">
+                          {partner.maintenancePhysical}
+                        </td>
+                        <td className="px-6 py-2 text-center">
+                          {partner.maintenanceLogical}
+                        </td>
+                        <td className="px-6 py-2 text-center">
+                          {partner.onCount}
+                        </td>
+                        <td className="px-6 py-2 text-center">
+                          {partner.offCount}
+                        </td>
                       </tr>
 
                       {/* Hiển thị các Block nếu đối tác được mở rộng */}
                       {expandedItems.partners[partner.name] &&
                         [...partner.children]
-                          .sort((a, b) => a.name.localeCompare(b.name)) // 🔹 Sắp xếp tăng dần theo tên Block
+                          .sort((a, b) => a.name.localeCompare(b.name))
                           .map((block, blockIndex) => (
                             <React.Fragment
                               key={`block-${partnerIndex}-${blockIndex}`}
@@ -1011,6 +2870,18 @@ const InventoryDashboard = () => {
                                 <td className="px-6 py-2 text-center">
                                   {block.swap}
                                 </td>
+                                <td className="px-6 py-2 text-center">
+                                  {block.maintenancePhysical}
+                                </td>
+                                <td className="px-6 py-2 text-center">
+                                  {block.maintenanceLogical}
+                                </td>
+                                <td className="px-6 py-2 text-center">
+                                  {block.onCount}
+                                </td>
+                                <td className="px-6 py-2 text-center">
+                                  {block.offCount}
+                                </td>
                               </tr>
 
                               {/* Hiển thị các Nhân sự nếu block được mở rộng */}
@@ -1037,6 +2908,18 @@ const InventoryDashboard = () => {
                                       </td>
                                       <td className="px-6 py-2 text-center">
                                         {personnel.swap}
+                                      </td>
+                                      <td className="px-6 py-2 text-center">
+                                        {personnel.maintenancePhysical}
+                                      </td>
+                                      <td className="px-6 py-2 text-center">
+                                        {personnel.maintenanceLogical}
+                                      </td>
+                                      <td className="px-6 py-2 text-center">
+                                        -
+                                      </td>
+                                      <td className="px-6 py-2 text-center">
+                                        -
                                       </td>
                                     </tr>
                                   )
@@ -1111,13 +2994,26 @@ const InventoryDashboard = () => {
                     >
                       Swap {getSortDirectionIcon("swap")}
                     </th>
+                    <th
+                      className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      onClick={() => requestSort("maintenancePhysical")}
+                    >
+                      Bảo Trì Vật Lý{" "}
+                      {getSortDirectionIcon("maintenancePhysical")}
+                    </th>
+                    <th
+                      className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      onClick={() => requestSort("maintenanceLogical")}
+                    >
+                      Bảo Trì Logic {getSortDirectionIcon("maintenanceLogical")}
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredData.length === 0 ? (
                     <tr>
                       <td
-                        colSpan="9"
+                        colSpan="11"
                         className="px-6 py-4 text-center text-gray-500"
                       >
                         Không có dữ liệu phù hợp với các bộ lọc đã chọn
@@ -1129,7 +3025,7 @@ const InventoryDashboard = () => {
                         key={index}
                         className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
                       >
-                        <td className="px-6 py-4  text-center whitespace-nowrap">
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
                           {item.partner}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-center">
@@ -1156,6 +3052,12 @@ const InventoryDashboard = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-center">
                           {item.swap.toLocaleString()}
                         </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                          {(item.maintenancePhysical || 0).toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                          {(item.maintenanceLogical || 0).toLocaleString()}
+                        </td>
                       </tr>
                     ))
                   )}
@@ -1169,4 +3071,4 @@ const InventoryDashboard = () => {
   );
 };
 
-export default InventoryDashboard;
+export default App;

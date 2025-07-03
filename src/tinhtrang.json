@@ -1,0 +1,155 @@
+[
+  {
+    "Tình Trạng": "[FSafe] - KH yêu cầu mua/đổi thiết bị để sử dụng được Fsafe",
+    "Loại Cls ": "Logic "
+  },
+  {
+    "Tình Trạng": "[FSafe] - Không sử dụng được",
+    "Loại Cls ": "Logic "
+  },
+  {
+    "Tình Trạng": "Camera",
+    "Loại Cls ": "Logic "
+  },
+  {
+    "Tình Trạng": "CMR-Hình ảnh bị giật, xé hình, chất lượng hình ảnh kém",
+    "Loại Cls ": "Logic "
+  },
+  {
+    "Tình Trạng": "CMR-KH cần hướng dẫn sử dụng Camera, App",
+    "Loại Cls ": "Logic "
+  },
+  {
+    "Tình Trạng": "CMR-KH yêu cầu di chuyển vị trí Camera",
+    "Loại Cls ": "Vật Lý "
+  },
+  {
+    "Tình Trạng": "CMR-Không kết nối được mạng LAN",
+    "Loại Cls ": "Logic "
+  },
+  {
+    "Tình Trạng": "CMR-Không login được App Camera",
+    "Loại Cls ": "Logic "
+  },
+  {
+    "Tình Trạng": "CMR-Không sử dụng được hồng ngoại",
+    "Loại Cls ": "Logic "
+  },
+  {
+    "Tình Trạng": "CMR-Không xem được Camera trên App",
+    "Loại Cls ": "Logic "
+  },
+  {
+    "Tình Trạng": "CMR-Không xem lại được",
+    "Loại Cls ": "Logic "
+  },
+  {
+    "Tình Trạng": "Chương trình thay thiết bị",
+    "Loại Cls ": "Vật Lý "
+  },
+  {
+    "Tình Trạng": "Game lag",
+    "Loại Cls ": "Logic "
+  },
+  {
+    "Tình Trạng": "Gãy đầu kết nối quang/Đứt dây tín hiệu",
+    "Loại Cls ": "Vật Lý "
+  },
+  {
+    "Tình Trạng": "IPTV-Có hình không có tiếng tất cả các kênh",
+    "Loại Cls ": "Logic "
+  },
+  {
+    "Tình Trạng": "IPTV-Có tiếng không có hình tất cả các kênh",
+    "Loại Cls ": "Logic "
+  },
+  {
+    "Tình Trạng": "IPTV-KH cần hướng dẫn sử dụng HDBox",
+    "Loại Cls ": "Logic "
+  },
+  {
+    "Tình Trạng": "IPTV-KH có nhu cầu di chuyển box",
+    "Loại Cls ": "Logic "
+  },
+  {
+    "Tình Trạng": "IPTV-Không xem được các kênh truyền hình",
+    "Loại Cls ": "Logic "
+  },
+  {
+    "IPTV-Không xem được VoD": "IPTV-Truyền hình giựt xé hình",
+    "Logic ": "Logic "
+  },
+  {
+    "IPTV-Không xem được VoD": "Kết nối được wifi nhưng không truy cập được hoặc truy cập rất chậm",
+    "Logic ": "Logic "
+  },
+  {
+    "IPTV-Không xem được VoD": "KH không hợp tác",
+    "Logic ": "Vật Lý "
+  },
+  {
+    "IPTV-Không xem được VoD": "KH làm gãy FC đứt dây tín hiệu",
+    "Logic ": "Vật Lý "
+  },
+  {
+    "IPTV-Không xem được VoD": "KH mua/đổi thiết bị",
+    "Logic ": "Vật Lý "
+  },
+  {
+    "IPTV-Không xem được VoD": "KH nhờ đổi pass WiFi",
+    "Logic ": "Logic "
+  },
+  {
+    "IPTV-Không xem được VoD": "KH yêu cầu chuyển dây thuê bao outdoor",
+    "Logic ": "Vật Lý "
+  },
+  {
+    "IPTV-Không xem được VoD": "KH yêu cầu di chuyển vị trí AP",
+    "Logic ": "Vật Lý "
+  },
+  {
+    "IPTV-Không xem được VoD": "KH yêu cầu di chuyển vị trí Modem",
+    "Logic ": "Vật Lý "
+  },
+  {
+    "IPTV-Không xem được VoD": "Không kết nối được wifi",
+    "Logic ": "Logic "
+  },
+  {
+    "IPTV-Không xem được VoD": "Không load được portal",
+    "Logic ": "Logic "
+  },
+  {
+    "IPTV-Không xem được VoD": "Lỗi box OTT",
+    "Logic ": "Logic "
+  },
+  {
+    "IPTV-Không xem được VoD": "Lỗi hạ tầng",
+    "Logic ": "Vật Lý "
+  },
+  {
+    "IPTV-Không xem được VoD": "Lỗi hệ thống",
+    "Logic ": "Vật Lý "
+  },
+  {
+    "IPTV-Không xem được VoD": "Lỗi Ivoice nghe - nói - tone",
+    "Logic ": "Logic "
+  },
+  {
+    "IPTV-Không xem được VoD": "Lỗi kết nối Box va TV",
+    "Logic ": "Logic "
+  },
+  {
+    "IPTV-Không xem được VoD": "Lỗi thiết bị của khách hàng",
+    "Logic ": "Vật Lý "
+  },
+  {
+    "IPTV-Không xem được VoD": "Lỗi thiết bị FPT cung cấp(Modem, Hdbox, Remote,...)",
+    "Logic ": "Vật Lý "
+  },
+  {
+    "IPTV-Không xem được VoD": "Suy hao không đạt chuẩn",
+    "Logic ": "Vật Lý "
+  },
+  
+]
